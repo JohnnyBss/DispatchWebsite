@@ -1,0 +1,49 @@
+<script src="/javascripts/view/login.js"></script>
+<div class="container" ng-app="myApp" ng-controller="myCtrl" >
+  <div class="login-content">
+    <div class="login-header">
+      <h3>系统登陆</h3>
+    </div>
+    <div class="login-form">
+      <form name="myForm" novalidate>
+        <div class="form-group form-group-lg has-feedback">
+          <input type="tel" class="form-control" name="cellphone" ng-model="cellphone" required placeholder="请输入手机号码">
+          <span class="glyphicon glyphicon-phone form-control-feedback" aria-hidden="true"></span>
+        </div>
+        <div class="form-group form-group-lg has-feedback">
+          <input type="password" class="form-control" name="password" ng-model="password" required placeholder="请输入密码">
+          <span class="glyphicon glyphicon-lock form-control-feedback" aria-hidden="true"></span>
+        </div>
+        <div class="form-group form-group-lg has-feedback">
+          <label class="radio-inline">
+            <input type="radio" name="userRole" id="inlineRadio1" value="3" ng-model="userRole" ng-checked="true"> 大堂经理
+          </label>
+          <label class="radio-inline">
+            <input type="radio" name="userRole" id="inlineRadio2" value="2" ng-model="userRole"> 理财经理
+          </label>
+          <label class="radio-inline">
+            <input type="radio" name="userRole" id="inlineRadio2" value="4" ng-model="userRole"> 营运主管
+          </label>
+        </div>
+
+        <button type="button" class="btn btn-block btn-lg btn-primary btn-login" ng-disabled="myForm.cellphone.$dirty && myForm.cellphone.$invalid || myForm.password.$dirty && myForm.password.$invalid" ng-click="login()">登陆</button>
+      </form>
+    </div>
+  </div>
+  <div class="modal fade" tabindex="-1" role="dialog" id="dialog-message">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">系统提示</h4>
+        </div>
+        <div class="modal-body">
+          <p>\{{alertMessage}}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">关闭</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
