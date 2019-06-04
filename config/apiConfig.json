@@ -14,7 +14,8 @@
       "hasWaitBusiness": "/api/business/wait",
       "complete": "/api/business/complete",
       "changeBusinessStatus": "/api/business/status",
-      "thirdParty": "/api/thirdParty"
+      "callback": "/api/callback",
+      "hurryUp": "/api/hurryUp"
     }
   },
   "aliSms": {

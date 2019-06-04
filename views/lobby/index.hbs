@@ -56,11 +56,12 @@
                 <span ng-if="data.businessStatus==1">办理中</span>
                 <span ng-if="data.businessStatus==2">拒绝</span>
                 <span ng-if="data.businessStatus==3">完成</span>
-                <button type="button" class="btn btn-danger btn-call-back" ng-if="data.businessStatus==4" ng-click="onGoBack(data.callBackMessage)">查看回呼</button>
+                <button type="button" class="btn btn-danger btn-call-back" ng-if="data.businessStatus==4" ng-click="onGoBack(data.callBackID, data.callBackMsg, data.otherCallBackMsg)">查看回呼</button>
               </td>
               <td>
                 <button type="button" class="btn btn-success btn-done" ng-if="data.businessStatus==4" ng-click="onComplete(data.businessID)">完结</button>
-                <span ng-if="data.businessStatus!=4">\{{ data.businessStatusText }}</span>
+                <button type="button" class="btn btn-info btn-done" ng-if="data.businessStatus==1" ng-click="onHurry(data.sendUserID, data.receiveUserID, data.businessID)">催促</button>
+                <span ng-if="data.businessStatus!=1 && data.businessStatus!=4">\{{ data.businessStatusText }}</span>
               </td>
             </tr>
           </tbody>
@@ -89,7 +90,7 @@
     </div>
   </div>
 
-  <div class="modal fade" tabindex="-1" role="dialog" id="dialog-resume">
+  <div class="modal fade" tabindex="-1" role="dialog" id="dialog-resume" style="overflow: auto">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">

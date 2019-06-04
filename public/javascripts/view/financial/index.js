@@ -1,7 +1,3 @@
-document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('alterAudio').play()
-});
-
 let app = angular.module('myApp', []);
 app.controller('myCtrl', function($scope, $http) {
   $scope.photo = '';
@@ -24,7 +20,16 @@ app.controller('myCtrl', function($scope, $http) {
   $scope.sessionPhoto = '';
   $scope.sessionFullName = '';
   $scope.sessionTime = '';
+  $scope.callBackData = [];
+  $scope.currentCallBackID = 1;
+  $scope.isShowOtherCallBackMessage = false;
+  $scope.otherCallBackMessage = '';
   $scope.callBackMessage = '';
+
+  $scope.hurryUpSenderPhoto = '';
+  $scope.hurryUpSenderName = '';
+  $scope.hurryUpTime = '';
+
   $scope.loginUser = {};
 
 
@@ -39,6 +44,8 @@ app.controller('myCtrl', function($scope, $http) {
     }
     this.loginUser = financialInfo;
     $scope.loadData(financialInfo);
+    $scope.loadCallBackData();
+
   };
 
   $scope.loadData = function(userInfo){
@@ -78,6 +85,25 @@ app.controller('myCtrl', function($scope, $http) {
           $scope.monitor();
         }
       }
+    }, function errorCallback(response) {
+      $scope.alertMessage = '网络异常，请稍后再试。';
+      $('#dialog-message').modal('show');
+    });
+  };
+
+  $scope.loadCallBackData = function(){
+    $http.get('/financial/index/callback').then(function successCallback(response) {
+      if(response.data.err){
+        $scope.alertMessage = '系统异常，无法获取回呼内容。';
+        $('#dialog-message').modal('show');
+        return false;
+      }
+      if(response.data.callBackList === null){
+        $scope.alertMessage = '未设置回呼内容。';
+        $('#dialog-message').modal('show');
+        return false;
+      }
+      $scope.callBackData = response.data.callBackList;
     }, function errorCallback(response) {
       $scope.alertMessage = '网络异常，请稍后再试。';
       $('#dialog-message').modal('show');
@@ -134,6 +160,7 @@ app.controller('myCtrl', function($scope, $http) {
   $scope.monitor = function(){
     $scope.bindData();
     $scope.receiveData();
+    $scope.receiveHurryUp();
   };
 
   $scope.bindData = function(){
@@ -162,7 +189,7 @@ app.controller('myCtrl', function($scope, $http) {
         $scope.sessionPhoto = response.data.latestBusiness[0].sendUserPhoto;
         $scope.sessionTime = response.data.latestBusiness[0].sendTime;
         $('#dialog-session').modal('show');
-        $scope.playVoice();
+        $scope.playVoice('alterAudio');
       }
     }, function errorCallback(response) {
       $scope.alertMessage = '网络异常，请稍后再试。';
@@ -170,15 +197,58 @@ app.controller('myCtrl', function($scope, $http) {
     });
   };
 
-  $scope.playVoice = function(){
-    let audio = document.getElementById('alterAudio');
+  $scope.receiveHurryUp = function(){
+    $http.get('/financial/index/hurryUp?receiveUserID=' + $scope.userID).then(function successCallback(response) {
+      if(response.data.err){
+        $scope.alertMessage = '系统异常，无法获取催促信息，请稍后再试。';
+        $('#dialog-message').modal('show');
+      }
+      if(response.data.hurryUpInfo === null){
+        return false;
+      }
+      $scope.hurryUpSenderPhoto = response.data.hurryUpInfo.sendUserPhoto;
+      $scope.hurryUpSenderName = response.data.hurryUpInfo.sendUserName;
+      $scope.hurryUpTime = response.data.hurryUpInfo.createTime;
+      $scope.playVoice('hurryAudio');
+      $('#dialog-hurry-up').modal('show');
+    }, function errorCallback(response) {
+      $scope.alertMessage = '网络异常，请稍后再试。';
+      $('#dialog-message').modal('show');
+    });
+  };
+
+  $scope.onKnow = function(){
+    //更新状态
+    $http.put('/financial/index/hurryUp', {
+      receiveUserID: $scope.loginUser.userID,
+      loginUser: $scope.loginUser.userID
+    }).then(function successCallback(response){
+      if(response.data.err){
+        $scope.alertMessage = '系统异常，请稍后再试。';
+        $('#dialog-message').modal('show');
+        return false;
+      }
+    }, function errorCallback(response){
+      $scope.alertMessage = '网络异常，请稍后再试。';
+      $('#dialog-message').modal('show');
+    });
+
+    //停止播放提醒音
+    $scope.stopVoice('hurryAudio');
+
+    //关闭提醒框
+    $('#dialog-hurry-up').modal('hide');
+  };
+
+  $scope.playVoice = function(elementID){
+    let audio = document.getElementById(elementID);
     if(audio !== null && audio.paused){
       audio.play();
     }
   };
 
-  $scope.stopVoice = function(){
-    let audio = document.getElementById('alterAudio');
+  $scope.stopVoice = function(elementID){
+    let audio = document.getElementById(elementID);
     if(audio !== null && !audio.paused){
       audio.pause();
     }
@@ -306,7 +376,7 @@ app.controller('myCtrl', function($scope, $http) {
     $('#dialog-session').modal('hide');
 
     //关闭提醒
-    $scope.stopVoice();
+    $scope.stopVoice('alterAudio');
   };
 
   $scope.onReject = function(){
@@ -320,12 +390,17 @@ app.controller('myCtrl', function($scope, $http) {
     $('#dialog-session').modal('hide');
 
     //关闭提醒
-    $scope.stopVoice();
+    $scope.stopVoice('alterAudio');
   };
 
   $scope.onComplete = function(businessID){
     $scope.currentBusinessID = businessID;
     $scope.alertConfirm('信息确认', '确认该笔业务已完结？', 'done');
+  };
+
+  $scope.onChooseGoBack = function(goBackID){
+    $scope.currentCallBackID = goBackID;
+    $scope.isShowOtherCallBackMessage = goBackID === 7;
   };
 
   $scope.onGoBack = function(businessID){
@@ -334,14 +409,16 @@ app.controller('myCtrl', function($scope, $http) {
   };
 
   $scope.onSend = function(){
-    if(this.callBackMessage.length === 0){
+    if(this.currentCallBackID === 7 && $scope.otherCallBackMessage.length === 0){
       return false;
     }
+
     //更新业务状态为"4:回呼"
     $http.put('/financial/index/business/callback', {
       businessID: $scope.currentBusinessID,
       businessStatus: '4',
-      callBackMessage: this.callBackMessage,
+      callBackID: $scope.currentCallBackID,
+      otherCallBackMsg: $scope.otherCallBackMessage,
       loginUser: $scope.loginUser.userID
     }).then(function successCallback(response){
       if(response.data.err){

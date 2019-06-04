@@ -86,7 +86,12 @@
           <h4 class="modal-title">业务回呼</h4>
         </div>
         <div class="modal-body">
-          <textarea class="form-control" rows="8" ng-model="callBackMessage" maxlength="100" placeholder="请输入回呼内容"></textarea>
+          <ul>
+            <li ng-repeat="data in callBackData" ng-class="{'choose': data.callBackID == currentCallBackID}" ng-click="onChooseGoBack(data.callBackID)">\{{data.callBackMessage}}</li>
+            <li ng-show="isShowOtherCallBackMessage">
+              <input type="text" class="form-control" ng-model="otherCallBackMessage" placeholder="请输入回呼内容">
+            </li>
+          </ul>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">取消</button>
@@ -116,6 +121,30 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-lg btn-primary" ng-click="onAccept()">接受</button>
           <button type="button" class="btn btn-lg btn-danger" ng-click="onReject()">拒绝</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" id="dialog-hurry-up">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">催促提醒</h4>
+        </div>
+        <div class="modal-body">
+          <div class="session-body">
+            <img ng-src="\{{hurryUpSenderPhoto}}" class="img-circle img-responsive">
+            <div class="space-normal-1"></div>
+            <p>\{{hurryUpSenderName}}</p>
+            <p>\{{hurryUpTime}}</p>
+            <h3>您收到一条催促提醒，请尽快办理完成当前业务。</h3>
+            <audio src="/voice/alert1.mp3" loop controls="controls" style="display: none" id="hurryAudio"></audio>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-primary" ng-click="onKnow()">知道了</button>
         </div>
       </div>
     </div>

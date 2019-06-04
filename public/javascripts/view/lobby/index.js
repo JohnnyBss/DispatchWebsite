@@ -98,9 +98,38 @@ app.controller('myCtrl', function ($scope, $http) {
     $scope.loadBusinessData();
   };
 
-  $scope.onGoBack = function(callBackMessage){
+  $scope.onHurry = function(sendUserID, receiveUserID, businessID){
+    //发送催促消息
+    $http.post('/lobby/index/hurryUp', {
+      sendUserID: sendUserID,
+      receiveUserID: receiveUserID,
+      businessID:  businessID,
+      loginUser: $scope.loginUser.userID
+    }).then(function successCallback(response) {
+      if(response.data.err){
+        $scope.alertTitle = '系统提示';
+        $scope.alertMessage = '系统异常，无法发送催促提醒，请稍后再试。';
+        $('#dialog-message').modal('show');
+        return false;
+      }
+      $scope.alertTitle = '系统提示';
+      $scope.alertMessage = '催促提醒已发送。';
+      $('#dialog-message').modal('show');
+    }, function errorCallback(response) {
+      $scope.alertTitle = '系统提示';
+      $scope.alertMessage = '网络异常，请稍后再试。';
+      $('#dialog-message').modal('show');
+    });
+  };
+
+  $scope.onGoBack = function(callBackID, callBackMsg, otherCallBackMsg){
     $scope.alertTitle = '回呼信息';
-    $scope.alertMessage = callBackMessage;
+    if(callBackID !== 7){
+      $scope.alertMessage = callBackMsg;
+    }else{
+      $scope.alertMessage = otherCallBackMsg;
+    }
+
     $('#dialog-message').modal('show');
   };
 
@@ -192,28 +221,10 @@ app.controller('myCtrl', function ($scope, $http) {
   };
 
   $scope.onResume = function(){
-    $('#dialog-send-business').modal('hide');
     $('#dialog-resume').modal('show');
   };
 
   $scope.onSend = function(){
-    //发送接单短信
-    // $http.post('/lobby/index/sendNoticeSms', {
-    //   sender:  $scope.loginUser.userName,
-    //   cellphone: '18182505299',
-    //   loginUser: $scope.loginUser.userID
-    // }).then(function successCallback(response) {
-    //   if(response.data.err){
-    //     $scope.alertTitle = '系统提示';
-    //     $scope.alertMessage = '短信发送异常。';
-    //     $('#dialog-message').modal('show');
-    //   }
-    // }, function errorCallback(response) {
-    //   $scope.alertTitle = '系统提示';
-    //   $scope.alertMessage = '网络异常，请稍后再试。';
-    //   $('#dialog-message').modal('show');
-    // });
-
     //发送接待消息
     $http.post('/lobby/index/business', {
       sendUserID:  $scope.loginUser.userID,

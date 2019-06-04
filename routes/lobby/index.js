@@ -86,6 +86,30 @@ router.post('/business', function (req, res, next) {
   });
 });
 
+router.post('/hurryUp', function (req, res, next) {
+  let service = new commonService.commonInvoke('hurryUp');
+  let data = {
+    sendUserID: req.body.sendUserID,
+    receiveUserID: req.body.receiveUserID,
+    businessID: req.body.businessID,
+    loginUser: req.body.loginUser
+  };
+
+  service.add(data, function (result) {
+    if(result.err){
+      res.json({
+        err: true,
+        msg: result.msg
+      });
+    }else{
+      res.json({
+        err: !result.content.result,
+        msg: result.content.responseMessage
+      });
+    }
+  });
+});
+
 router.post('/sendNoticeSms', function (req, res, next) {
   let sender = req.body.sender;
   let sendTime = sd.format(new Date(), 'YYYY-MM-DD HH:mm');
