@@ -72,7 +72,7 @@ app.controller('myCtrl', function ($scope, $http) {
           $http.post('/financial/index', {
             userID:  response.data.userInfo.userID,
             clockStatus: '0',
-            loginUser: response.data.userInfo.userName
+            loginUser: response.data.userInfo.userID
           }).then(function successCallback(response) {
             if(response.data.err){
               $scope.alertMessage = '系统异常，请稍后再试。';
