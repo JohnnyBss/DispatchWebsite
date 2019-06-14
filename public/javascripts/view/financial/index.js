@@ -324,7 +324,7 @@ app.controller('myCtrl', function($scope, $http) {
         $scope.changeBusinessComplete();
         //更新工作状态
         this.status = '1';
-        this.statusText = '空闲';
+        this.statusText = '等待';
         this.clock();
         //刷新数据
         //$scope.bindData();
@@ -338,7 +338,7 @@ app.controller('myCtrl', function($scope, $http) {
       return false;
     }
     this.status = '1';
-    this.statusText = '空闲';
+    this.statusText = '等待';
     this.clock();
   };
 
@@ -428,7 +428,7 @@ app.controller('myCtrl', function($scope, $http) {
       }
       //更新工作状态
       $scope.status = '1';
-      $scope.statusText = '空闲';
+      $scope.statusText = '等待';
       $scope.clock();
 
       //刷新数据

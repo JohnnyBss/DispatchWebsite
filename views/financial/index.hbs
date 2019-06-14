@@ -16,7 +16,7 @@
     </div>
     <div class="col-sm-10 bar-option">
       <button type="button" class="btn-option" ng-class="{'btn-on-duty':status == 4,'btn-off-duty':status != 4}" ng-click="onToggle()">\{{toggleText}}</button>
-      <button type="button" class="btn-option btn-free" ng-show="isShowOptionButtons" ng-click="onFree()">空闲</button>
+      <button type="button" class="btn-option btn-free" ng-show="isShowOptionButtons" ng-click="onFree()">等待</button>
       <button type="button" class="btn-option btn-busy" ng-show="isShowOptionButtons" ng-click="onBusy()">繁忙</button>
       <button type="button" class="btn-option btn-leave" ng-show="isShowOptionButtons" ng-click="onLeave()">离开</button>
     </div>

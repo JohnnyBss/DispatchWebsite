@@ -193,7 +193,7 @@ app.controller('myCtrl', function ($scope, $http) {
     //判断当前打卡状态
     if($scope.currentClockStatus !== '1'){
       $scope.alertTitle = '系统提示';
-      $scope.alertMessage = '该理财经理当前为非空闲状态，不能发送业务请求。';
+      $scope.alertMessage = '该理财经理当前为非等待状态，不能发送业务请求。';
       $('#dialog-message').modal('show');
       return false;
     }
